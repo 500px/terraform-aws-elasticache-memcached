@@ -17,8 +17,3 @@ output "config_host" {
   value       = "${module.dns_config.hostname}"
   description = "Config host"
 }
-
-output "hosts" {
-  value       = "${join(",", null_resource.host.*.triggers.name)}"
-  description = "Hosts"
-}
