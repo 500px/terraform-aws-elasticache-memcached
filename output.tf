@@ -17,3 +17,8 @@ output "config_host" {
   value       = "${module.dns_config.hostname}"
   description = "Config host"
 }
+
+output "cluster_endpoint" {
+  value       = "${module.dns.hostname}"
+  description = "Cluster endpoint"
+}
