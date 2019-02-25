@@ -15,6 +15,12 @@ variable "stage" {
   description = "Stage (e.g. `prod`, `dev`, `staging`)"
 }
 
+variable "tags" {
+  type        = "map"
+  description = "Additional tags (_e.g._ map(\"BusinessUnit\",\"ABC\")"
+  default     = {}
+}
+
 variable "security_groups" {
   type        = "list"
   description = "AWS security group ids"

@@ -4,6 +4,7 @@ module "label" {
   namespace = "${var.namespace}"
   name      = "${var.name}"
   stage     = "${var.stage}"
+  tags      = "${var.tags}"
 }
 
 resource "null_resource" "host" {
