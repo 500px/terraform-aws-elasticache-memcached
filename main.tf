@@ -24,7 +24,7 @@ resource "null_resource" "host" {
 #
 resource "aws_security_group" "default" {
   vpc_id = "${var.vpc_id}"
-  name   = "${module.label.id}"
+  name   = "memcached-${module.label.id}"
 
   ingress {
     from_port       = "11211"                    # Memcache
