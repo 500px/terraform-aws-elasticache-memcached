@@ -44,12 +44,12 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_elasticache_subnet_group" "default" {
-  name       = "${module.label.id}"
+  name       = "memcached-${module.label.id}"
   subnet_ids = ["${var.subnets}"]
 }
 
 resource "aws_elasticache_parameter_group" "default" {
-  name   = "${module.label.id}"
+  name   = "$memcached-{module.label.id}"
   family = "memcached1.4"
 
   parameter {
