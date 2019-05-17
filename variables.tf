@@ -2,6 +2,11 @@ variable "name" {
   description = "The Name of the application or solution  (e.g. `bastion` or `portal`)"
 }
 
+variable "label_id" {
+  default     = true
+  description = "Set to false to use direct name rather than label generated id"
+}
+
 variable "enabled" {
   description = "Set to false to prevent the module from creating any resources"
   default     = "true"

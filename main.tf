@@ -19,12 +19,16 @@ resource "null_resource" "host" {
   }
 }
 
+locals {
+  name = "cache-${var.label_id == "true" ? module.label.name : local.name}"
+}
+
 #
 # Security Group Resources
 #
 resource "aws_security_group" "default" {
   vpc_id = "${var.vpc_id}"
-  name   = "${module.label.id}"
+  name   = "${local.name}"
 
   ingress {
     from_port       = "11211"                    # Memcache
@@ -44,12 +48,12 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_elasticache_subnet_group" "default" {
-  name       = "${module.label.id}"
+  name       = "${local.name}"
   subnet_ids = ["${var.subnets}"]
 }
 
 resource "aws_elasticache_parameter_group" "default" {
-  name   = "${module.label.id}"
+  name   = "${local.name}"
   family = "memcached1.4"
 
   parameter {
@@ -62,7 +66,7 @@ resource "aws_elasticache_parameter_group" "default" {
 # ElastiCache Resources
 #
 resource "aws_elasticache_cluster" "default" {
-  cluster_id                   = "${module.label.id}"
+  cluster_id                   = "${local.name}"
   engine                       = "memcached"
   engine_version               = "${var.engine_version}"
   node_type                    = "${var.instance_type}"
@@ -82,7 +86,7 @@ resource "aws_elasticache_cluster" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  alarm_name          = "${module.label.id}-cpu-utilization"
+  alarm_name          = "${local.name}-cpu-utilization"
   alarm_description   = "Memcached cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -94,7 +98,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   threshold = "${var.alarm_cpu_threshold_percent}"
 
   dimensions {
-    CacheClusterId = "${module.label.id}"
+    CacheClusterId = "${local.name}"
   }
 
   alarm_actions = ["${var.alarm_actions}"]
@@ -102,7 +106,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  alarm_name          = "${module.label.id}-freeable-memory"
+  alarm_name          = "${local.name}-freeable-memory"
   alarm_description   = "Memcached cluster freeable memory"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
@@ -114,7 +118,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   threshold = "${var.alarm_memory_threshold_bytes}"
 
   dimensions {
-    CacheClusterId = "${module.label.id}"
+    CacheClusterId = "${local.name}"
   }
 
   alarm_actions = ["${var.alarm_actions}"]
@@ -125,7 +129,7 @@ module "dns" {
   source    = "git::https://github.com/cloudposse/terraform-aws-route53-cluster-hostname.git?ref=tags/0.2.1"
   enabled   = "${var.enabled == "true" && length(var.zone_id) > 0 ? "true" : "false"}"
   namespace = "${var.namespace}"
-  name      = "${var.name}"
+  name      = "${local.name}"
   stage     = "${var.stage}"
   ttl       = 60
   zone_id   = "${var.zone_id}"
@@ -136,7 +140,7 @@ module "dns_config" {
   source    = "git::https://github.com/cloudposse/terraform-aws-route53-cluster-hostname.git?ref=tags/0.2.1"
   enabled   = "${var.enabled == "true" && length(var.zone_id) > 0 ? "true" : "false"}"
   namespace = "${var.namespace}"
-  name      = "config.${var.name}"
+  name      = "config.${local.name}"
   stage     = "${var.stage}"
   ttl       = 60
   zone_id   = "${var.zone_id}"
