@@ -20,7 +20,7 @@ resource "null_resource" "host" {
 }
 
 locals {
-  name = "cache-${var.label_id == "true" ? module.label.name : local.name}"
+  name = "cache-${var.label_id == "true" ? module.label.name : module.label.id}"
 }
 
 #
